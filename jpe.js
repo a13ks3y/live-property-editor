@@ -1,6 +1,12 @@
 (function (global){
 
+    /* utils */
 
+    /**
+     * forEach wrapper. can be used for arrays, and for objects
+     * @param arr {Array|Object}
+     * @param callback
+     */
     var forEach = function (arr, callback) {
         if (arr instanceof Array) {
             return arr.forEach(function (value, index, list){
@@ -12,6 +18,8 @@
             });
         }
     };
+
+    /* DSL */
 
     var node = function (name, options) {
         var element = global.document.createElement(name);
@@ -50,8 +58,6 @@
         return list;
     }
 
-
-
     var panel = function (options) {
         var panelNode = node("div", options);
         Object.keys(options.children).forEach(function (key) {
@@ -62,7 +68,95 @@
         return panelNode;
     }
 
+    var input = function (options) {
+        var input = node("input", options);
+        if (options.value != undefined) {
+            input.value = options.value;
+        }
+        if (options.type) {
+            input.type = options.type;
+        }
+        return input;
+    };
 
+    var select = function (options) {
+        var select = node("select", options);
+
+        if (options.defaultOption) {
+            select.appendChild(node("option", {
+                text : options.defaultOption.name,
+                value : options.defaultOption.value
+            }));
+            select.value = options.defaultOption.value;
+        }
+
+        forEach(options.options, function (option) {
+            select.appendChild(node("option", {
+                text : option.name,
+                value : option.value
+            }));
+        });
+
+        return select;
+    };
+
+    /* Widget */
+
+    var buildValueGui = function (valueInfo, context) {
+        var wrapper = node("div", {});
+        var label = node("p", {text : valueInfo.name + '{' + valueInfo.type + '}'});
+
+        var inputType = {string: 'text', number : 'number', boolean: 'checkbox'}[valueInfo.type] || 'text';
+
+        var field = input({
+            name : valueInfo.name,
+            value : valueInfo.value,
+            type : inputType,
+            className : valueInfo.type + " input"
+        });
+        var editButton = node("button", {text: "Edit", onclick : function () {
+            //todo change value
+            //todo cast value to correct type
+            context.root[valueInfo.name] = field.value;
+            //alert(valueInfo.name);
+        }});
+        wrapper.appendChild(label);
+        wrapper.appendChild(field);
+        wrapper.appendChild(editButton);
+        return wrapper;
+    };
+
+    var buildContextGui = function (context, parentNode) {
+
+
+
+        var contextPanel = panel({
+            className : "property-editor well",
+            children : {
+                header : h1(context.name),
+                parentButton : node("button", {
+                    text : "Parent",
+                    visible : context.parentContext != null,
+                    onclick: function () {
+                        context.changeRootToParent();
+                    }
+                }),
+                linkValuesSelect : select({ visible: context.objects.length, onchange : function (event) {
+                    context.selectChildRoot(event.target.value);
+                }, defaultOption : {name : '---', value: '' }, options : context.objects.map(function (valueInfo) {
+                    return { value : valueInfo.name, name : valueInfo.name};
+                })}),
+                values : list({type : "ul", className: "values unstyled", children : context.values.map(function (valueInfo) {
+                    return buildValueGui(valueInfo, context);
+                })})
+
+            }
+        });
+
+        parentNode.appendChild(contextPanel);
+        return contextPanel;
+
+    };
 
     var jpeContext = function(name, root, parentContext) {
         var context = {
@@ -104,101 +198,12 @@
 
         return context;
     };
-
-
-    var input = function (options) {
-        var input = node("input", options);
-        if (options.value != undefined) {
-            input.value = options.value;
-        }
-        if (options.type) {
-            input.type = options.type;
-        }
-        return input;
-    };
-
-    var select = function (options) {
-        var select = node("select", options);
-
-        if (options.defaultOption) {
-            select.appendChild(node("option", {
-                text : options.defaultOption.name,
-                value : options.defaultOption.value
-            }));
-            select.value = options.defaultOption.value;
-        }
-
-        forEach(options.options, function (option) {
-            select.appendChild(node("option", {
-                text : option.name,
-                value : option.value
-            }));
-        });
-
-        return select;
-    };
-
-
-
-
-    var buildValueGui = function (valueInfo, context) {
-        var wrapper = node("div", {});
-        var label = node("p", {text : valueInfo.name + '{' + valueInfo.type + '}'});
-
-        var inputType = {string: 'text', number : 'number', boolean: 'checkbox'}[valueInfo.type] || 'text';
-
-        var field = input({
-            name : valueInfo.name,
-            value : valueInfo.value,
-            type : inputType,
-            className : valueInfo.type + " input"
-        });
-        var editButton = node("button", {text: "Edit", onclick : function () {
-            //todo change value
-            //todo cast value to correct type
-            context.root[valueInfo.name] = field.value;
-            //alert(valueInfo.name);
-        }});
-        wrapper.appendChild(label);
-        wrapper.appendChild(field);
-        wrapper.appendChild(editButton);
-        return wrapper;
-    };
-
-
-
-    var buildContextGui = function (context, parentNode) {
-
-
-
-        var contextPanel = panel({
-            className : "property-editor well",
-            children : {
-                header : h1(context.name),
-                parentButton : node("button", {
-                    text : "Parent",
-                    visible : context.parentContext != null,
-                    onclick: function () {
-                        context.changeRootToParent();
-                    }
-                }),
-                linkValuesSelect : select({ visible: context.objects.length, onchange : function (event) {
-                    context.selectChildRoot(event.target.value);
-                }, defaultOption : {name : '---', value: '' }, options : context.objects.map(function (valueInfo) {
-                    return { value : valueInfo.name, name : valueInfo.name};
-                })}),
-                values : list({type : "ul", className: "values unstyled", children : context.values.map(function (valueInfo) {
-                    return buildValueGui(valueInfo, context);
-                })})
-
-            }
-        });
-
-        parentNode.appendChild(contextPanel);
-        return contextPanel;
-
-    };
-
+    /**
+     * Create property-editor widget
+     * @param parentNode {HTMLElement}
+     * @param root {Object}
+     * @returns {Object}
+     */
     var jpe = function (parentNode, root) {
 
         var context = jpeContext("root", root, null);
@@ -225,14 +230,10 @@
             editorPanel = buildContextGui(context, parentNode);
         };
 
-
-
         changeRoot("root", root, null);
-
 
         return context;
     };
-
 
     global.jpe = jpe;
 

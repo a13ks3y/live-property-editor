@@ -1,0 +1,7 @@
+.property-editor {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    min-width: 260px;
+    overflow-y: auto;
+}

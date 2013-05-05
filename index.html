@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live property editor</title>
+    <link rel="stylesheet" href="bootstrap.css"/>
+    <link rel="stylesheet" href="jpe.css"/>
+</head>
+<body>
+
+<div class="well">
+
+    <h1>Live property editor</h1>
+    <p>Usage example:</p>
+    <pre>
+&lt;link rel=&quot;stylesheet&quot; href=&quot;bootstrap.css&quot;/&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;jpe.css&quot;/&gt;
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;jpe.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+var test = {
+
+    foo : &#39;foo&#39;,
+    bar : &#39;bar&#39;,
+    number : 10,
+    float : 42.27,
+    color: &#39;#ff0022&#39;,
+    boolean : false,
+
+    nested : {
+        other : &#39;other&#39;,
+        another : &#39;another&#39;
+    }
+
+};
+
+jpe(document.body, test);
+    </pre>
+    <p>This example shows how you can edit "test" object properties, including nested objects,</p>
+    <p>It may be helpful for debugging, changing game balance or etc.</p>
+</div>
+
+
+<script type="text/javascript" src="jpe.js"></script>
+<script type="text/javascript">
+    var test = {
+
+        foo : 'foo',
+        bar : 'bar',
+        number : 10,
+        float : 42.27,
+        color: '#ff0022',
+        boolean : false,
+
+        nested : {
+            other : 'other',
+            another : 'another'
+        }
+
+    };
+
+    jpe(document.body, test);
+
+</script>
+
+</body>
+</html>

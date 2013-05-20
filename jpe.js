@@ -19,6 +19,7 @@
         }
     };
 
+
     /* DSL */
 
     var node = function (name, options) {
@@ -73,6 +74,10 @@
         if (options.value != undefined) {
             input.value = options.value;
         }
+        if (options.type === 'checkbox') {
+            input.checked = !!options.value;
+        }
+
         if (options.type) {
             input.type = options.type;
         }
@@ -115,9 +120,17 @@
             className : valueInfo.type + " input"
         });
         var editButton = node("button", {text: "Edit", onclick : function () {
-            //todo change value
-            //todo cast value to correct type
-            context.root[valueInfo.name] = field.value;
+            switch (valueInfo.type.toLowerCase()) {
+                case "number" :
+                    context.root[valueInfo.name] = Number(field.value);
+                    break;
+                case "boolean" :
+                    context.root[valueInfo.name] = field.checked;
+                    break;
+                default :
+                    context.root[valueInfo.name] = field.value;
+                    break;
+            }
             //alert(valueInfo.name);
         }});
         wrapper.appendChild(label);

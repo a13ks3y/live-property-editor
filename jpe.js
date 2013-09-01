@@ -1,6 +1,8 @@
 /**
  * Live Property Editor (JavaScript Property Editor JPE)
  *
+ * https://github.com/a13ks3y/live-property-editor
+ *
  * Add widget for fast access to any property of specific object, and edit it in run-time.
  * @version 1.0
  * @license MIT

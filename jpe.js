@@ -116,12 +116,16 @@
     };
 
     /* Widget */
+    var colorRegExp = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
     var buildValueGui = function (valueInfo, context) {
         var wrapper = node("div", {});
         var label = node("p", {text : valueInfo.name + '{' + valueInfo.type + '}'});
 
         var inputType = {string: 'text', number : 'number', boolean: 'checkbox'}[valueInfo.type] || 'text';
+        if (colorRegExp.test(context.root[valueInfo.name])) {
+            inputType = 'color';
+        }
 
         var field = input({
             name : valueInfo.name,

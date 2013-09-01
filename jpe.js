@@ -1,3 +1,11 @@
+/**
+ * Live Property Editor (JavaScript Property Editor JPE)
+ *
+ * Add widget for fast access to any property of specific object, and edit it in run-time.
+ * @version 1.0
+ * @license MIT
+ * @author a13ks3y <a13ks3y.ass@gmail.com>
+ */
 (function (global){
 
     /* utils */
@@ -133,9 +141,23 @@
             }
             //alert(valueInfo.name);
         }});
+        var updateButton = node('button', {text: "Update", onclick : function () {
+            switch(valueInfo.type.toLowerCase()) {
+                case "number" :
+                    field.value = context.root[valueInfo.name];
+                break;
+                case "boolean" :
+                    field.checked = context.root[valueInfo.name];
+                break;
+                default :
+                    field.value = context.root[valueInfo.name];
+                break;
+            }
+        }});
         wrapper.appendChild(label);
         wrapper.appendChild(field);
         wrapper.appendChild(editButton);
+        wrapper.appendChild(updateButton);
         return wrapper;
     };
 

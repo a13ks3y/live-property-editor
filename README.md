@@ -1,6 +1,8 @@
 live-property-editor
 ====================
 
+Demo: http://a13ks3y.github.io/live-property-editor/
+
 Global JavaScript objects properties editor widget. Purposes: edit constants, coefficients etc. without reload page.
 
 Not depend on other libraries
